@@ -2,11 +2,11 @@
 // Runs before every request reaches the origin.
 //
 // Two behaviors:
-//   1. Apex redirect: seanlh.com/* → 301 → https://www.seanlh.com/*
+//   1. Apex redirect: <domain>/* → 301 → https://www.<domain>/*
 //   2. Index append:  /path or /path/ → /path/index.html
 //      (only for paths that have no file extension)
 //
-// DOMAIN is replaced at deploy time via templatefile().
+// ${DOMAIN} is injected at deploy time via Terraform templatefile().
 
 function handler(event) {
   var req = event.request;
@@ -21,12 +21,12 @@ function handler(event) {
 
   // 1. Redirect bare domain → www (301 permanent).
   //    The browser then re-requests via www, hitting behavior #2 below.
-  if (host === "DOMAIN") {
+  if (host === "${DOMAIN}") {
     return {
       statusCode: 301,
       statusDescription: "Moved Permanently",
       headers: {
-        location: { value: "https://www.DOMAIN" + uri }
+        location: { value: "https://www.${DOMAIN}" + uri }
       }
     };
   }
