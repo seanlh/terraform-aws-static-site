@@ -130,6 +130,14 @@ resource "aws_cloudfront_distribution" "site" {
     }
   }
 
+  # S3 with OAC returns 403 (not 404) for missing objects — handle both
+  custom_error_response {
+    error_code            = 403
+    response_code         = 404
+    response_page_path    = "/error.html"
+    error_caching_min_ttl = 0
+  }
+
   custom_error_response {
     error_code            = 404
     response_code         = 404
