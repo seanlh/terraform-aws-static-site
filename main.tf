@@ -289,6 +289,58 @@ resource "aws_iam_role_policy" "deploy" {
           "dynamodb:DescribeTable",
         ]
         Resource = "arn:aws:dynamodb:us-east-1:*:table/seanlh-terraform-locks"
+      },
+      {
+        # Read-only permissions needed for `terraform plan` to refresh state
+        # across every resource type the module manages. Scoped to read APIs
+        # only — no mutation, no GetObject (handled separately in S3Deploy).
+        Sid    = "TerraformRefreshRead"
+        Effect = "Allow"
+        Action = [
+          # Route53
+          "route53:GetHostedZone",
+          "route53:GetChange",
+          "route53:ListResourceRecordSets",
+          "route53:ListTagsForResource",
+          # ACM
+          "acm:DescribeCertificate",
+          "acm:ListTagsForCertificate",
+          # S3 (bucket-level only; GetObject is intentionally not granted here)
+          "s3:GetBucketPolicy",
+          "s3:GetBucketLocation",
+          "s3:GetBucketVersioning",
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS",
+          "s3:GetBucketWebsite",
+          "s3:GetBucketLogging",
+          "s3:GetBucketTagging",
+          "s3:GetBucketRequestPayment",
+          "s3:GetBucketObjectLockConfiguration",
+          "s3:GetBucketNotification",
+          "s3:GetBucketOwnershipControls",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:GetAccelerateConfiguration",
+          "s3:GetEncryptionConfiguration",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetReplicationConfiguration",
+          # CloudFront
+          "cloudfront:GetDistribution",
+          "cloudfront:GetDistributionConfig",
+          "cloudfront:GetOriginAccessControl",
+          "cloudfront:GetFunction",
+          "cloudfront:DescribeFunction",
+          "cloudfront:ListTagsForResource",
+          # IAM (role + OIDC provider data source)
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:ListInstanceProfilesForRole",
+          "iam:ListRoleTags",
+          "iam:GetOpenIDConnectProvider",
+          "iam:ListOpenIDConnectProviders",
+        ]
+        Resource = "*"
       }
     ]
   })
