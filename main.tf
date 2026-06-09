@@ -280,9 +280,14 @@ resource "aws_iam_role_policy" "deploy" {
         ]
       },
       {
-        Sid    = "TerraformLockRead"
+        Sid    = "TerraformLockReadWrite"
         Effect = "Allow"
-        Action = ["dynamodb:GetItem", "dynamodb:DescribeTable"]
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:DescribeTable",
+        ]
         Resource = "arn:aws:dynamodb:us-east-1:*:table/seanlh-terraform-locks"
       }
     ]
